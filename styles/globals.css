@@ -25,22 +25,51 @@
   .matrix-border:hover {
     border-color: rgba(0, 255, 65, 0.5);
   }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thumb-green-500 {
+    scrollbar-color: #10b981 #1f2937;
+  }
+  
+  .scrollbar-track-gray-800 {
+    scrollbar-color: #10b981 #1f2937;
+  }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar for webkit browsers */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a2e;
+  background: #1f2937;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00ff41;
+  background: #10b981;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #00d4aa;
+  background: #059669;
+}
+
+::-webkit-scrollbar-corner {
+  background: #1f2937;
+}
+
+/* Ensure proper scrolling for response areas */
+.response-container {
+  max-height: 12rem; /* 192px */
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.response-container.expanded {
+  max-height: 24rem; /* 384px */
 }
