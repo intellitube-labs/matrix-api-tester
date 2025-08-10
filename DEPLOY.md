@@ -17,17 +17,31 @@
    ```
    matrix-api-tester/
    ├── pages/
+   │   ├── api/
+   │   │   ├── ping.js
+   │   │   ├── encode.js
+   │   │   ├── encode-batch.js
+   │   │   └── redeploy.js
    │   ├── _app.js
    │   └── index.js
    ├── styles/
    │   └── globals.css
+   ├── .env.local            ← Add your secrets here
    ├── package.json
    ├── tailwind.config.js
    ├── postcss.config.js
    └── next.config.js
    ```
 
-3. **Push to GitHub:**
+3. **Setup Environment Variables:**
+   Create a `.env.local` file in your project root:
+   ```bash
+   # .env.local
+   RENDER_DEPLOY_KEY=your_secret_render_deploy_key_here
+   NEXT_PUBLIC_MATRIX_API_URL=https://the-matrix-server.onrender.com
+   ```
+
+4. **Push to GitHub:**
    ```bash
    git add .
    git commit -m "Initial commit: Matrix API Tester"
@@ -36,14 +50,58 @@
    git push -u origin main
    ```
 
-4. **Deploy on Vercel:**
+5. **Deploy on Vercel:**
    - Go to [vercel.com](https://vercel.com)
    - Sign in with GitHub
    - Click "New Project"
    - Import your `matrix-api-tester` repository
-   - Vercel will auto-detect it's a Next.js app
+   - **IMPORTANT**: Add environment variables in Vercel:
+     - Go to Project Settings → Environment Variables
+     - Add: `RENDER_DEPLOY_KEY` = `your_secret_key`
+     - Add: `NEXT_PUBLIC_MATRIX_API_URL` = `https://the-matrix-server.onrender.com`
    - Click "Deploy"
-   - Done! Your app will be live at `https://your-project-name.vercel.app`
+   - Done! 🎉
+
+## 🔒 Environment Variables Setup
+
+### **For Local Development:**
+```bash
+# .env.local (never commit this file!)
+RENDER_DEPLOY_KEY=rnd_your_secret_key_here
+NEXT_PUBLIC_MATRIX_API_URL=https://the-matrix-server.onrender.com
+```
+
+### **For Vercel Deployment:**
+1. Go to your Vercel project dashboard
+2. Navigate to **Settings** → **Environment Variables**
+3. Add these variables:
+   ```
+   RENDER_DEPLOY_KEY = rnd_your_secret_key_here
+   NEXT_PUBLIC_MATRIX_API_URL = https://the-matrix-server.onrender.com
+   ```
+4. Redeploy your project
+
+### **Environment Variable Types:**
+- `RENDER_DEPLOY_KEY`: Server-side only (secure) - Used in API routes
+- `NEXT_PUBLIC_*`: Client-side accessible - Used in frontend components
+
+## 🔑 How the Deploy Key Works:
+
+1. **Priority System**: 
+   - If user provides a key in the form → Use that
+   - If no key provided → Use `process.env.RENDER_DEPLOY_KEY`
+   - If neither → Request without authentication
+
+2. **Security**: 
+   - Environment variables are only accessible on the server
+   - Your secret key never reaches the browser
+   - API routes act as secure proxies
+
+3. **Usage**:
+   ```javascript
+   // In pages/api/redeploy.js
+   const authKey = deployKey || process.env.RENDER_DEPLOY_KEY;
+   ```
 
 ### Method 2: Vercel CLI Deploy
 
@@ -59,37 +117,39 @@
    # Copy all the files here
    ```
 
-3. **Install Dependencies:**
+3. **Create .env.local:**
+   ```bash
+   echo "RENDER_DEPLOY_KEY=your_key_here" > .env.local
+   ```
+
+4. **Install Dependencies:**
    ```bash
    npm install
    ```
 
-4. **Test Locally:**
+5. **Test Locally:**
    ```bash
    npm run dev
    # Visit http://localhost:3000
    ```
 
-5. **Deploy:**
+6. **Deploy:**
    ```bash
    vercel
-   # Follow the prompts:
-   # - Set up and deploy? Y
-   # - Which scope? (choose your account)
-   # - Link to existing project? N
-   # - What's your project's name? matrix-api-tester
-   # - In which directory is your code located? ./
+   # Add environment variables when prompted
+   vercel env add RENDER_DEPLOY_KEY
    ```
 
 ## 🌟 Features of This New Version
 
 ✅ **Zero CORS Issues** - Built-in Next.js API handling  
+✅ **Secure Environment Variables** - Server-side secret management  
+✅ **Performance Benchmarking** - Detailed metrics tracking  
 ✅ **Modern React Hooks** - Clean state management  
 ✅ **Responsive Design** - Works on all devices  
 ✅ **Real-time Feedback** - Loading states and timestamps  
 ✅ **Matrix-themed UI** - Dark theme with green accents  
 ✅ **Auto-deployment** - Vercel handles everything  
-✅ **TypeScript Ready** - Can easily add TypeScript later  
 
 ## 🔧 Local Development
 
@@ -107,36 +167,36 @@ npm run build
 npm run start
 ```
 
-## 📝 Environment Variables (Optional)
+## 📝 Complete Environment Variables List
 
-If you want to make the API URL configurable:
+```bash
+# .env.local
+# Render Deploy Key (required for redeploy functionality)
+RENDER_DEPLOY_KEY=rnd_your_secret_deploy_key_here
 
-1. Create `.env.local`:
-   ```
-   NEXT_PUBLIC_MATRIX_API_URL=https://the-matrix-server.onrender.com
-   NEXT_PUBLIC_DEPLOY_API_URL=https://api.render.com/deploy
-   ```
+# Matrix API URL (optional, has default)
+NEXT_PUBLIC_MATRIX_API_URL=https://the-matrix-server.onrender.com
 
-2. Update the URLs in `pages/index.js`:
-   ```javascript
-   const BASE_URL = process.env.NEXT_PUBLIC_MATRIX_API_URL || 'https://the-matrix-server.onrender.com';
-   const DEPLOY_URL = process.env.NEXT_PUBLIC_DEPLOY_API_URL || 'https://api.render.com/deploy';
-   ```
+# Render Deploy URL (optional, has default)
+NEXT_PUBLIC_DEPLOY_API_URL=https://api.render.com/deploy
+```
 
-## 🚨 Important Notes
+## 🚨 Security Notes
 
-- The `/ping` endpoint is now correctly treated as a GET request
-- All API calls are made from the browser directly (no server-side proxy needed)
-- Vercel automatically handles HTTPS and CDN distribution
-- The app will work perfectly on mobile devices
-- No CORS issues since it's served from a proper domain
+- **Never commit `.env.local`** to version control
+- Add `.env.local` to your `.gitignore` file
+- Environment variables starting with `NEXT_PUBLIC_` are exposed to the browser
+- Server-only variables (like `RENDER_DEPLOY_KEY`) remain secure on the server
+- Always use the Vercel dashboard to set production environment variables
 
 ## 🎯 Quick Deploy Summary
 
 1. Copy all files to a new folder
-2. Push to GitHub
-3. Connect to Vercel
-4. Deploy automatically
-5. Done! 🎉
+2. Create `.env.local` with your secrets
+3. Push to GitHub (excluding .env.local)
+4. Connect to Vercel
+5. Add environment variables in Vercel dashboard
+6. Deploy automatically
+7. Done! 🎉
 
-Your Matrix API Tester will be live and accessible from anywhere without any CORS issues!
+Your Matrix API Tester will be live with secure environment variable handling!

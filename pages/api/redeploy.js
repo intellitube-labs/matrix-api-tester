@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       headers['Authorization'] = `Bearer ${deployKey}`;
     }
 
-    const response = await fetch('https://api.render.com/deploy/srv-d2c4c6ruibrs73841pa0?key=WrxSOJmjDDo', {
+    const response = await fetch(process.env.RENDER_DEPLOY_KEY, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({})
